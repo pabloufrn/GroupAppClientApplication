@@ -1,7 +1,5 @@
 package br.ufrn.imd.groupapp.views;
 
-import br.imd.ufrn.TwoClients.server.interfaces.ClientGroupRemote;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -10,7 +8,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
 import java.awt.event.*;
 import java.rmi.RemoteException;
-
+/*
 public class ChatWindow extends JDialog {
     private JPanel chatPanel;
     private JTextField msgInput;
@@ -115,3 +113,4 @@ public class ChatWindow extends JDialog {
         this.clientGroup = clientGroup;
     }
 }
+*/
