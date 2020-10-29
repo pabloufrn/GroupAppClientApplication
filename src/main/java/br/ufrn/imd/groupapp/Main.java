@@ -1,21 +1,28 @@
 package br.ufrn.imd.groupapp;
 
+import br.ufrn.imd.groupapp.cache.Cache;
 import br.ufrn.imd.groupapp.model.Group;
 import br.ufrn.imd.groupapp.service.GroupAppService;
 import br.ufrn.imd.groupapp.service.RetrofitInitializer;
-//import br.ufrn.imd.groupapp.views.MainWindow;
-import retrofit2.Callback;
+import br.ufrn.imd.groupapp.views.MainWindow;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        String username = Cache.getUsername();
+        if(username == null) {
+            System.out.println("Digite seu nome: ");
+            Scanner scanner = new Scanner(System.in);
+            username = scanner.next();
+            Cache.setUsername(username);
+        }
+        System.out.println("user: " + username);
         try{
 //
-//            MainWindow mainWindow = new MainWindow("Multichat");
-//            mainWindow.setVisible(true);
+            MainWindow mainWindow = new MainWindow("Multichat");
+            mainWindow.setVisible(true);
 
 //            ChatWindow chatWindow = new ChatWindow("Multichat");
 //            chatWindow.setVisible(true);
@@ -24,12 +31,6 @@ public class Main {
 //            ClientGroupRemote clientGroup = stub
 //            ♦.registerClient(client);
 //            chatWindow.setClientGroup(clientGroup);
-
-            GroupAppService groupAppService = new RetrofitInitializer().groupAppService();
-
-            List<Group> groups = groupAppService.listGroups().execute().body();
-
-            System.out.printf(groups.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
