@@ -11,11 +11,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,7 +91,9 @@ public class MainWindow extends JFrame implements ListSelectionListener {
 //        ChatWindow chatWindow = createChatWindow();
 //            client.setWindow(chatWindow);
         try {
-            Response<User> response = service.joinGroup(selectedGroup, Cache.getUsername()).execute();
+            Response<User> response = service.joinGroup(
+                    selectedGroup, new User(
+                            -1L, Cache.getUsername(), null)).execute();
             if(response.code() == 200) {
                 user = response.body();
                 System.out.println(user);
@@ -137,10 +135,10 @@ public class MainWindow extends JFrame implements ListSelectionListener {
 //        ChatWindow chatWindow = createChatWindow();
 
         try {
-            Response<User> response = service.createGroup(Cache.getUsername(), new Group(title)).execute();
+            Response<User> response = service.createGroup(
+                    new User(-1L, Cache.getUsername(), new Group(title))).execute();
             if (response.code() == 200){
                 user = response.body();
-                // abrir janela
             }
         } catch (IOException e) {
             e.printStackTrace();

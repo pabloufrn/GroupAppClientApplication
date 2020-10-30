@@ -3,23 +3,23 @@ package br.ufrn.imd.groupapp.service;
 import br.ufrn.imd.groupapp.model.Group;
 import br.ufrn.imd.groupapp.model.User;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
 import java.util.List;
 
 public interface GroupAppService {
-    @GET("group/")
+    @GET("group")
     Call<List<Group>> listGroups();
 
     @GET("group/{id}")
     Call<Group> selectGroup(@Path("id") Long id);
 
-    @POST("group/{username}")
-    Call<User> createGroup(@Path("username") String username, @Body Group group);
+    @POST("group")
+    Call<User> createGroup(@Body User user);
 
-    @GET("group/{id}/join/{username}")
-    Call<User> joinGroup(@Path("id") Long id, @Path("username") String username);
+    @POST("group/{id}/user")
+    Call<User> joinGroup(@Path("id") Long id, @Body User user);
+
+    @DELETE("user/{id}")
+    Call<User> leaveGroup(@Path("id") Long id);
 }
