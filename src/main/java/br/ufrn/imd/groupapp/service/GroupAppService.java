@@ -6,7 +6,6 @@ import br.ufrn.imd.groupapp.model.User;
 import retrofit2.Call;
 import retrofit2.http.*;
 
-import java.util.Date;
 import java.util.List;
 
 public interface GroupAppService {
@@ -23,7 +22,7 @@ public interface GroupAppService {
     Call<User> joinGroup(@Path("id") Long id, @Body User user);
 
     @DELETE("user/{id}")
-    Call<User> leaveGroup(@Path("id") Long id);
+    Call<Void> leaveGroup(@Path("id") Long id);
 
     @GET("/message")
     Call<List<Message>> getMessages(@Query("group") Long groupId, @Query("from") String from);

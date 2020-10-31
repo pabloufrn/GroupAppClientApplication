@@ -60,7 +60,6 @@ public class ChatWindow extends JDialog {
         // ----------------------------------------
         // ----------- EVENTOS --------------------
         // ----------------------------------------
-//        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -114,6 +113,7 @@ public class ChatWindow extends JDialog {
         try {
             Message message = new Message(null, msgInput.getText(), user, user.getGroup(), null);
             service.sendMessage(message).execute();
+            msgInput.setText("");
             loadMessages();
         } catch (IOException e) {
             e.printStackTrace();
