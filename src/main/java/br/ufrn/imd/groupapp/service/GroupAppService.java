@@ -16,11 +16,11 @@ public interface GroupAppService {
     @GET("group/{id}")
     Call<Group> selectGroup(@Path("id") Long id);
 
-    @POST("group/{username}")
-    Call<User> createGroup(@Path("username") String username, @Body Group group);
+    @POST("group")
+    Call<User> createGroup(@Body() User user);
 
-    @GET("group/{id}/join/{username}")
-    Call<User> joinGroup(@Path("id") Long id, @Path("username") String username);
+    @POST("group/{id}/user")
+    Call<User> joinGroup(@Path("id") Long id, @Body User user);
 
     @DELETE("user/{id}")
     Call<User> leaveGroup(@Path("id") Long id);

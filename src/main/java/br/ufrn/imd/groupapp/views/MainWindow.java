@@ -93,7 +93,7 @@ public class MainWindow extends JFrame implements ListSelectionListener {
     public void joinSelectedGroup() {
         try {
             Response<User> response = service.joinGroup(
-                    selectedGroup, Cache.getUsername()).execute();
+                    selectedGroup, new User (-1L, Cache.getUsername(), null)).execute();
             loadGroup(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,7 +102,8 @@ public class MainWindow extends JFrame implements ListSelectionListener {
 
     private void createGroup(String title) {
         try {
-            Response<User> response = service.createGroup(Cache.getUsername(), new Group(title)).execute();
+            Response<User> response = service.createGroup(
+                    new User (-1L, Cache.getUsername(), new Group(title))).execute();
             loadGroup(response);
         } catch (IOException e) {
             e.printStackTrace();
