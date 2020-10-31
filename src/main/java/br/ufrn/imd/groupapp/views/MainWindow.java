@@ -9,8 +9,11 @@ import retrofit2.Response;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,7 +72,7 @@ public class MainWindow extends JFrame implements ListSelectionListener {
             groups = service.listGroups().execute().body();
             this.listModel.addAll(
                     groups.stream().map(group -> group.getTitle())
-                        .collect(Collectors.toList()));
+                            .collect(Collectors.toList()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,63 +91,43 @@ public class MainWindow extends JFrame implements ListSelectionListener {
     }
 
     public void joinSelectedGroup() {
-//        ChatWindow chatWindow = createChatWindow();
-//            client.setWindow(chatWindow);
         try {
             Response<User> response = service.joinGroup(
-                    selectedGroup, new User(
-                            -1L, Cache.getUsername(), null)).execute();
-            if(response.code() == 200) {
-                user = response.body();
-                System.out.println(user);
-                // abrir janela
-            }
-
+                    selectedGroup, Cache.getUsername()).execute();
+            loadGroup(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        User user = service.joinGroup(selectedGroup, "")
-//        if(clientGroup == null){
-//            System.out.println("Grupo não existe");
-//            this.refreshGroups();
-//            return;
-//        }
-//        chatWindow.setClientGroup(clientGroup);
-//        chatWindow.setVisible(true);
-
     }
 
-//    private ChatWindow createChatWindow() {
-//        ChatWindow chatWindow = new ChatWindow(this);
-//        client.setWindow(chatWindow);
-//        chatWindow.addWindowListener(new WindowListener() {
-//            @Override public void windowOpened(WindowEvent e) { }
-//            @Override public void windowClosing(WindowEvent e) {
-//                MainWindow.this.refreshGroups();
-//            }
-//            @Override public void windowClosed(WindowEvent e) { }
-//            @Override public void windowIconified(WindowEvent e) { }
-//            @Override public void windowDeiconified(WindowEvent e) { }
-//            @Override public void windowActivated(WindowEvent e) { }
-//            @Override public void windowDeactivated(WindowEvent e) { }
-//        });
-//        return chatWindow;
-//    }
     private void createGroup(String title) {
-
-//        ChatWindow chatWindow = createChatWindow();
-
         try {
-            Response<User> response = service.createGroup(
-                    new User(-1L, Cache.getUsername(), new Group(title))).execute();
-            if (response.code() == 200){
-                user = response.body();
-            }
+            Response<User> response = service.createGroup(Cache.getUsername(), new Group(title)).execute();
+            loadGroup(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
-//            chatWindow.setClientGroup(clientGroup);
-
-//        chatWindow.setVisible(true);
     }
+
+    private void loadGroup(Response<User> response) {
+        if (response.code() == 200) {
+            user = response.body();
+            ChatWindow chatWindow = createChatWindow();
+            chatWindow.setVisible(true);
+        } else {
+            System.err.println("Error:" + response);
+        }
+    }
+
+    private ChatWindow createChatWindow() {
+        ChatWindow chatWindow = new ChatWindow(this, user, service);
+        chatWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainWindow.this.refreshGroups();
+            }
+        });
+        return chatWindow;
+    }
+
 }
