@@ -11,13 +11,14 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ChatWindow extends JDialog {
     private JPanel chatPanel;
@@ -27,30 +28,28 @@ public class ChatWindow extends JDialog {
     private final User user;
     private final GroupAppService service;
     private Date lastUpdate;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public ChatWindow(JFrame parentWindow, User user, GroupAppService service) {
-//        super(title);
-//        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-//        this.setContentPane(chatPanel);
-
         super(parentWindow);
         this.setModal(true);
         this.setLocationRelativeTo(parentWindow);
         this.setContentPane(chatPanel);
         this.pack();
 
-
+        this.setTitle(user.getGroup().getTitle());
         this.service = service;
         this.user = user;
         this.lastUpdate = new Date(0L);
 
+        LoadMessagesTask task = new LoadMessagesTask(this);
+        scheduler.scheduleAtFixedRate(task, 0, 3, TimeUnit.SECONDS);
 
         // ----------------------------------------
         // ------------ SETUP ---------------------
         // ----------------------------------------
 
         //writeChatMsg("Olá, seja bem vindo ao chat global.\n");
-        loadMessages();
 
         // ----------------------------------------
         // ------------ PROPS ---------------------
@@ -63,6 +62,7 @@ public class ChatWindow extends JDialog {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                scheduler.shutdown();
                 leaveGroup();
             }
         });
@@ -114,7 +114,7 @@ public class ChatWindow extends JDialog {
             Message message = new Message(null, msgInput.getText(), user, user.getGroup(), null);
             service.sendMessage(message).execute();
             msgInput.setText("");
-            loadMessages();
+            loadNewMessages();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,7 +133,7 @@ public class ChatWindow extends JDialog {
         }
     }
 
-    private void loadMessages() {
+    public void loadNewMessages() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
             String dateString = dateFormat.format(lastUpdate);
@@ -143,7 +143,8 @@ public class ChatWindow extends JDialog {
                 if (messages != null) {
                     Date newLastUpdate = lastUpdate;
                     for (Message msg : messages) {
-                        String msgString = msg.getUser().getName() + ": " + msg.getText();
+                        String msgString = msg.getUser() != null ? msg.getUser().getName() + ": " : "";
+                        msgString += msg.getText();
                         writeChatMsg(msgString);
                         if (msg.getDate().after(newLastUpdate)) {
                             newLastUpdate = msg.getDate();
