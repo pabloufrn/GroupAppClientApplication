@@ -43,13 +43,12 @@ public class ChatWindow extends JDialog {
         this.lastUpdate = new Date(0L);
 
         LoadMessagesTask task = new LoadMessagesTask(this);
-        scheduler.scheduleAtFixedRate(task, 0, 3, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 2, TimeUnit.SECONDS);
 
         // ----------------------------------------
         // ------------ SETUP ---------------------
         // ----------------------------------------
 
-        //writeChatMsg("Olá, seja bem vindo ao chat global.\n");
 
         // ----------------------------------------
         // ------------ PROPS ---------------------
@@ -111,8 +110,8 @@ public class ChatWindow extends JDialog {
     public void sendChatMsg() {
         sendButton.setEnabled(false);
         try {
-            Message message = new Message(null, msgInput.getText(), user, user.getGroup(), null);
-            service.sendMessage(message).execute();
+            Message message = new Message(null, msgInput.getText(), null, null, null);
+            service.sendMessage(message, user.getId()).execute();
             msgInput.setText("");
             loadNewMessages();
         } catch (IOException e) {
@@ -143,7 +142,7 @@ public class ChatWindow extends JDialog {
                 if (messages != null) {
                     Date newLastUpdate = lastUpdate;
                     for (Message msg : messages) {
-                        String msgString = msg.getUser() != null ? msg.getUser().getName() + ": " : "";
+                        String msgString = msg.getAuthor() != null ? msg.getAuthor() + ": " : "";
                         msgString += msg.getText();
                         writeChatMsg(msgString);
                         if (msg.getDate().after(newLastUpdate)) {

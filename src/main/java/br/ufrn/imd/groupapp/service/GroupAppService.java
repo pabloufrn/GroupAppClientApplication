@@ -28,5 +28,5 @@ public interface GroupAppService {
     Call<List<Message>> getMessages(@Query("group") Long groupId, @Query("from") String from);
 
     @POST("/message")
-    Call<Message> sendMessage(@Body Message message);
+    Call<Message> sendMessage(@Body Message message, @Query("userId") Long userId);
 }

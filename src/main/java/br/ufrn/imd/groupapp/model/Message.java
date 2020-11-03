@@ -9,7 +9,7 @@ import java.util.Date;
 public class Message {
     private Long id;
     private String text;
-    private User user;
+    private String author;
     private Group group;
     private Date date;
 }

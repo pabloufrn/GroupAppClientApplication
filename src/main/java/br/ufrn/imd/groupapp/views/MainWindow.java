@@ -16,6 +16,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MainWindow extends JFrame implements ListSelectionListener {
@@ -24,6 +27,7 @@ public class MainWindow extends JFrame implements ListSelectionListener {
     private JButton joinButton;
     private JButton createGroupButton;
     private DefaultListModel<String> listModel;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private List<Group> groups;
     private Long selectedGroup;
@@ -47,7 +51,8 @@ public class MainWindow extends JFrame implements ListSelectionListener {
         gList.setVisibleRowCount(5);
 
         this.service = new RetrofitInitializer().groupAppService();
-        this.refreshGroups();
+        LoadGroupsTask task = new LoadGroupsTask(this);
+        scheduler.scheduleAtFixedRate(task, 0, 2, TimeUnit.SECONDS);
         // -------------------------------------------
         // ---------------- EVENTOS ------------------
         // -------------------------------------------
@@ -66,7 +71,7 @@ public class MainWindow extends JFrame implements ListSelectionListener {
         });
     }
 
-    private void refreshGroups() {
+    public void refreshGroups() {
         this.listModel.clear();
         try {
             groups = service.listGroups().execute().body();
