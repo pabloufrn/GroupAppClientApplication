@@ -12,9 +12,6 @@ public interface GroupAppService {
     @GET("group")
     Call<List<Group>> listGroups();
 
-    @GET("group/{id}")
-    Call<Group> selectGroup(@Path("id") Long id);
-
     @POST("group")
     Call<User> createGroup(@Body() User user);
 
